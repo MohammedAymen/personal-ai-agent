@@ -6,142 +6,277 @@ colorTo: green
 sdk: docker
 pinned: false
 ---
-
-# 🤖 Personal AI Agent
-
-بيجاوب على أي سؤال عنك بناءً على الـ CV بتاعك، GitHub، وLinkedIn.
-
+# 🤖 Personal AI Agent — RAG-Powered Portfolio Assistant
+ 
+<div align="center">
+![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-0.3+-1C3C3C?style=for-the-badge&logo=chainlink&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Gemini-AI-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![HuggingFace](https://img.shields.io/badge/HuggingFace-Spaces-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+ 
+**A context-aware AI assistant built to represent Mohamed Aymen.**  
+Ask it anything about my skills, projects, or experience — it knows everything.
+ 
+[🌐 Live Portfolio](https://poortflio.netlify.app/) • [📖 API Docs](https://mohamed10ayman24-personal-ai-agent.hf.space/docs) • [🚀 Live API](https://mohamed10ayman24-personal-ai-agent.hf.space)
+ 
+</div>
 ---
-
-## 🗂️ هيكل المشروع
-
+ 
+## 📌 Overview
+ 
+This project is a **production-ready RAG (Retrieval-Augmented Generation) pipeline** that acts as a personal AI representative. Instead of a static bio, visitors on my portfolio can have a real conversation with an AI that knows my actual CV, GitHub projects, and LinkedIn experience — all grounded in real data, no hallucinations.
+ 
+---
+ 
+## 🚀 Key Features
+ 
+- **🔍 Dynamic RAG Pipeline** — Ingests data from PDFs (CV), ZIP files (LinkedIn exports), and the GitHub API to build a local FAISS vector store
+- **🧠 Powered by Gemini** — Uses Google's Gemini for both LLM responses and text embeddings (`gemini-embedding-001`)
+- **⚡ FastAPI Backend** — High-performance async API with CORS support for seamless frontend integration
+- **🐳 Dockerized Deployment** — Fully containerized for consistent behavior across all environments
+- **☁️ Hosted on Hugging Face Spaces** — Live and publicly accessible with zero cold-start issues
+- **📦 Git LFS Integration** — Professional handling of large binary assets (PDFs, ZIPs) via Git Large File Storage
+---
+ 
+## 🛠️ Tech Stack
+ 
+| Layer | Technology |
+|-------|-----------|
+| **Language** | Python 3.9 |
+| **API Framework** | FastAPI + Uvicorn |
+| **AI Orchestration** | LangChain 0.3 |
+| **Vector Database** | FAISS (CPU) |
+| **LLM & Embeddings** | Google GenAI — Gemini |
+| **Data Sources** | PDF (CV), GitHub API, LinkedIn CSV Export |
+| **Infrastructure** | Docker, Hugging Face Spaces, Git LFS |
+ 
+---
+ 
+## 🏗️ Architecture
+ 
+```
+┌─────────────────────────────────────────────────────┐
+│                   Data Sources                       │
+│  📄 CV (PDF)  │  🐙 GitHub API  │  💼 LinkedIn ZIP  │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│              LangChain Ingestion Pipeline            │
+│   Text Splitting → Gemini Embeddings → FAISS Store  │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│                  FastAPI Backend                     │
+│   POST /ask  │  GET /health  │  GET /docs (Swagger) │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│              Portfolio Frontend                      │
+│         https://poortflio.netlify.app/               │
+│   Hero Section Chat Widget — powered by this API    │
+└─────────────────────────────────────────────────────┘
+```
+ 
+---
+ 
+## 📡 API Reference
+ 
+**Base URL:** `https://mohamed10ayman24-personal-ai-agent.hf.space`
+ 
+### `GET /`
+Returns agent status and basic info.
+ 
+```json
+{
+  "status": "running",
+  "name": "Mohamed Aymen Salem",
+  "sources_loaded": 5
+}
+```
+ 
+### `GET /health`
+Health check endpoint.
+ 
+```json
+{ "status": "ok", "ready": true }
+```
+ 
+### `POST /ask`
+Ask the agent a question about Mohamed.
+ 
+**Request:**
+```json
+{
+  "question": "What are your main technical skills?",
+  "session_id": "optional-session-id"
+}
+```
+ 
+**Response:**
+```json
+{
+  "answer": "Mohamed's main skills include Python (Async, OOP), TensorFlow, FastAPI, OpenCV, DeepFace, Gemini API, and the Microsoft Power Platform stack...",
+  "sources": ["CV", "GitHub", "LinkedIn"],
+  "name": "Mohamed Aymen Salem"
+}
+```
+ 
+### Try it live:
+🔗 **Swagger UI:** [`/docs`](https://mohamed10ayman24-personal-ai-agent.hf.space/docs)
+ 
+---
+ 
+## 🗂️ Project Structure
+ 
 ```
 personal-ai-agent/
-├── main.py                  # نقطة البداية
+├── main.py                  # CLI entry point
+├── api.py                   # FastAPI app
+├── Dockerfile               # Container config
 ├── requirements.txt
-├── .env.example             # انسخه لـ .env وملأه
+├── .env.example
 ├── src/
-│   ├── cv_loader.py         # بيقرأ الـ CV (PDF)
-│   ├── github_fetcher.py    # بيجيب داتا GitHub تلقائي
-│   ├── linkedin_loader.py   # بيقرأ LinkedIn export
-│   └── rag_chain.py         # الـ AI + vector store
-└── data/                    # حط ملفاتك هنا
+│   ├── cv_loader.py         # PDF ingestion
+│   ├── github_fetcher.py    # GitHub API scraper
+│   ├── linkedin_loader.py   # LinkedIn CSV parser
+│   └── rag_chain.py         # Gemini embeddings + LangChain RAG
+└── data/
     ├── cv.pdf
-    └── linkedin_export.zip  # أو مجلد linkedin_export/
+    ├── linkedin_export.zip
+    └── vectorstore/         # FAISS index (auto-generated)
 ```
-
+ 
 ---
-
-## ⚙️ الإعداد خطوة بخطوة
-
-### 1. تثبيت المتطلبات
-
+ 
+## ⚙️ Local Setup
+ 
+### 1. Clone & install
+ 
 ```bash
+git clone https://github.com/MohammedAymen/personal-ai-agent
 cd personal-ai-agent
 pip install -r requirements.txt
 ```
-
-### 2. إعداد الـ .env
-
+ 
+### 2. Configure environment
+ 
 ```bash
 cp .env.example .env
+# Fill in your keys:
+# GOOGLE_API_KEY=AIza...
+# GITHUB_TOKEN=ghp_...
+# GITHUB_USERNAME=MohammedAymen
+# YOUR_NAME=Mohamed Aymen Salem
 ```
-
-افتح `.env` وملأ:
-
-```env
-GROQ_API_KEY=sk-...         # من console.groq.com
-GITHUB_TOKEN=ghp_...          # اتفضل الخطوة الجاية
-GITHUB_USERNAME=yourusername
-YOUR_NAME=Ahmed Mohamed        # اسمك بالكامل
+ 
+### 3. Add your data
+ 
 ```
-
-### 3. GitHub Token
-
-1. روح: https://github.com/settings/tokens
-2. اضغط **Generate new token (classic)**
-3. اختار صلاحية: `public_repo` و `read:user`
-4. انسخ الـ token وحطه في الـ `.env`
-
-### 4. الـ CV
-
-حط ملف الـ PDF في:
+data/cv.pdf               ← your CV
+data/linkedin_export.zip  ← LinkedIn data export
 ```
-data/cv.pdf
-```
-
-### 5. LinkedIn Export
-
-1. روح **LinkedIn > Settings & Privacy > Data Privacy**
-2. اختار **Get a copy of your data**
-3. اختار: Profile, Positions, Education, Skills, Certifications
-4. هيجيلك email فيه ZIP خلال 24 ساعة
-5. حط الـ ZIP في:
-   ```
-   data/linkedin_export.zip
-   ```
-
----
-
-## 🚀 التشغيل
-
+ 
+### 4. Run
+ 
 ```bash
+# CLI mode
 python main.py
+ 
+# API mode
+uvicorn api:app --reload --host 0.0.0.0 --port 8000
 ```
-
-### أوامر مفيدة
-
-| الأمر | الوظيفة |
-|-------|---------|
-| `python main.py` | تشغيل عادي |
-| `python main.py --rebuild` | إعادة بناء الـ vector store (لو عدلت ملفاتك) |
-| `خروج` أو `exit` | للخروج |
-
+ 
 ---
-
-## 💬 أمثلة على الأسئلة
-
+ 
+## 🐳 Docker
+ 
+```bash
+docker build -t personal-ai-agent .
+docker run -p 8000:8000 \
+  -e GOOGLE_API_KEY=your_key \
+  -e GITHUB_USERNAME=MohammedAymen \
+  -e YOUR_NAME="Mohamed Aymen Salem" \
+  personal-ai-agent
 ```
-سؤالك: ما هي المهارات التقنية لديك؟
-سؤالك: اشرح مشاريع GitHub بتاعتك
-سؤالك: ما هي خبرتك في Python؟
-سؤالك: What technologies do you work with?
-سؤالك: كم سنة خبرة عندك في الـ backend؟
-سؤالك: Tell me about your education
-```
-
+ 
 ---
-
-## 🔧 استكشاف الأخطاء
-
-**❌ `GROQ_API_KEY` error**
-→ تأكد إن الـ key صح في `.env`
-
-**❌ GitHub 401 Unauthorized**
-→ الـ token منتهي أو غلط، اعمل واحد جديد
-
-**❌ مفيش داتا اتحملت**
-→ تأكد إن الملفات موجودة في مجلد `data/`
-
-**❌ الإجابات بتيجي غلط**
-→ شغّل `python main.py --rebuild` عشان يعيد بناء الـ vector store
-
+ 
+## ☁️ Deployment on Hugging Face Spaces
+ 
+This project is hosted on Hugging Face Spaces as a Docker space.
+ 
+### Steps taken:
+ 
+1. **Git LFS Setup** — Initialized LFS to track binary files:
+   ```bash
+   git lfs install
+   git lfs track "*.pdf" "*.zip"
+   ```
+ 
+2. **History Migration** — Cleaned existing binaries from Git history:
+   ```bash
+   git lfs migrate import --include="*.pdf,*.zip" --everything
+   ```
+ 
+3. **Secrets Management** — `GOOGLE_API_KEY` and other secrets are stored in Hugging Face Space Secrets (not in the repo).
+4. **Push & deploy:**
+   ```bash
+   git remote add space https://huggingface.co/spaces/mohamed10ayman24/personal-ai-agent
+   git push space main
+   ```
+ 
 ---
-
-## 🧠 كيف بيشتغل
-
+ 
+## 💡 Example Questions
+ 
 ```
-CV (PDF) ──┐
-           │
-GitHub ────┼──► Text Chunks ──► Embeddings ──► FAISS Vector Store
-           │                                         │
-LinkedIn ──┘                                         │
-                                                     ▼
-                                    سؤالك ──► Retriever ──► GPT-4o-mini ──► الإجابة
+"What are Mohamed's main technical skills?"
+"Tell me about the Blockchain Voting project"
+"Does he have experience with FastAPI?"
+"What is his educational background?"
+"ما هي مشاريعه البرمجية؟"
+"هل لديه خبرة في الذكاء الاصطناعي؟"
 ```
+ 
+---
+ 
+## 🌐 Live Integration
+ 
+This API powers the **AI Chat Widget** on my personal portfolio website.  
+Visitors can ask questions about me directly from the hero section of:
+ 
+> 🔗 **[https://poortflio.netlify.app/](https://poortflio.netlify.app/)**
+ 
+The widget connects to the Hugging Face Spaces endpoint in real-time, with an offline fallback for when the API is warming up.
+ 
+---
+ 
+## 👨‍💻 Author
+ 
+**Mohamed Aymen Salem**  
+AI Programmer & Developer — Specialist in Machine Learning, Computer Vision & NLP  
+📍 Port Said, Egypt
+ 
+[![GitHub](https://img.shields.io/badge/GitHub-MohammedAymen-181717?style=flat&logo=github)](https://github.com/MohammedAymen)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Mohamed%20Aymen-0A66C2?style=flat&logo=linkedin)](https://linkedin.com/in/mohamed-aymen-750236225)
+[![Portfolio](https://img.shields.io/badge/Portfolio-Live-00C7B7?style=flat&logo=netlify)](https://poortflio.netlify.app/)
+ 
 
-1. **Data Loading**: بيقرأ الـ CV، يجيب GitHub API، يقرأ LinkedIn CSV
-2. **Chunking**: بيقطع الـ text لـ chunks صغيرة
-3. **Embedding**: بيحول كل chunk لـ vector رقمي
-4. **FAISS**: بيحفظ الـ vectors للبحث السريع
-5. **RAG**: لما تسأل، بيجيب أقرب chunks ويديهم للـ GPT يجاوب
+
+
+
+
+
+
+
+
+
+
+
+
+
