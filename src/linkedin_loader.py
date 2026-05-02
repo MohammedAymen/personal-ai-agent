@@ -1,7 +1,3 @@
-"""
-linkedin_loader.py - بيقرأ الـ LinkedIn data export بتاعتك
-"""
-
 import os
 import zipfile
 from pathlib import Path

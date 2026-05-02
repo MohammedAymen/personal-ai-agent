@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-api.py - FastAPI wrapper for the Personal AI Agent
-شغّله بـ: uvicorn api:app --reload
-"""
-
 import os
 import sys
 from pathlib import Path
@@ -20,7 +15,7 @@ from pydantic import BaseModel
 from typing import Optional
 import uvicorn
 
-# ---- Load data & build chain once at startup ----
+
 from src.cv_loader import load_cv
 from src.github_fetcher import load_github
 from src.linkedin_loader import load_linkedin
@@ -32,7 +27,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Allow all origins so your portfolio website can call it
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -41,12 +36,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---- Global state ----
+
 qa_chain = None
 your_name = os.getenv("YOUR_NAME", "Mohamed Ayman Salem")
 
 
-# ---- Pydantic models ----
+
 class QuestionRequest(BaseModel):
     question: str
     session_id: Optional[str] = "default"
@@ -64,7 +59,7 @@ class StatusResponse(BaseModel):
     sources_loaded: int
 
 
-# ---- Startup: load everything ----
+
 @app.on_event("startup")
 async def startup_event():
     global qa_chain
@@ -92,7 +87,7 @@ async def startup_event():
     print("API ready!")
 
 
-# ---- Endpoints ----
+
 @app.get("/", response_model=StatusResponse)
 async def root():
     return StatusResponse(
@@ -131,4 +126,4 @@ async def ask(request: QuestionRequest):
 
 
 if __name__ == "__main__":
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("api:app", host="0.0.0.0", port=7860, reload=True)

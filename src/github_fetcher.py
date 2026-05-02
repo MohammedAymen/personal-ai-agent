@@ -1,6 +1,3 @@
-"""
-github_fetcher.py - بيجيب كل الداتا من GitHub بتاعك تلقائي
-"""
 
 import os
 import requests
@@ -66,7 +63,7 @@ def load_github(username: str, token: str, max_repos: int = 30) -> list[Document
     documents = []
 
     try:
-        # ---- بروفايل المستخدم ----
+        
         profile = _fetch_user_profile(username, headers)
 
         profile_text = f"""
@@ -91,9 +88,9 @@ Account Created: {profile.get('created_at', 'N/A')}
             )
         )
 
-        # ---- الـ Repositories ----
+        
         repos = _fetch_repos(username, headers)
-        # استثني الـ forks وخد الأهم
+      
         own_repos = [r for r in repos if not r.get("fork", False)]
         top_repos = sorted(own_repos, key=lambda r: r.get("stargazers_count", 0), reverse=True)[:max_repos]
 
@@ -128,7 +125,7 @@ Account Created: {profile.get('created_at', 'N/A')}
                 )
             )
 
-        # ---- ملخص اللغات ----
+        
         if all_languages:
             total = sum(all_languages.values())
             sorted_langs = sorted(all_languages.items(), key=lambda x: x[1], reverse=True)

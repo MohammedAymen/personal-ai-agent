@@ -1,8 +1,3 @@
-"""
-rag_chain.py - بيستخدم Google Gemini للـ LLM والـ embeddings
-مجاني 100% - بيستخدم google-genai الجديدة
-"""
-
 import os
 from pathlib import Path
 from typing import List
