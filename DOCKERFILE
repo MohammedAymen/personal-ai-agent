@@ -1,5 +1,5 @@
 # استخدم نسخة بايثون مناسبة
-FROM python:3.11-slim
+FROM python:3.9
 
 # ضبط مكان الكود داخل الـ Container
 WORKDIR /code
