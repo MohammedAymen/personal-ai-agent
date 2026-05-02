@@ -1,3 +1,12 @@
+---
+title: Personal AI Agent
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # 🤖 Personal AI Agent
 
 بيجاوب على أي سؤال عنك بناءً على الـ CV بتاعك، GitHub، وLinkedIn.
