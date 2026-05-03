@@ -39,7 +39,7 @@ class GeminiEmbeddings(Embeddings):
 def build_vectorstore(documents: List[Document], force_rebuild: bool = False) -> FAISS:
     print("   Setting up Gemini embeddings...")
     embeddings = GeminiEmbeddings(
-        api_key=os.getenv("GOOGLE_API_KEY"),
+        api_key=os.getenv("GOOGLE_EMBEDDINGS_KEY"),
         model="gemini-embedding-001",
     )
 
