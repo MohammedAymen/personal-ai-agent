@@ -78,7 +78,7 @@ def build_vectorstore(documents: List[Document], force_rebuild: bool = False) ->
 
 def build_qa_chain(vectorstore: FAISS, your_name: str) -> ConversationalRetrievalChain:
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash",
+        model="gemini-3-flash-preview",
         temperature=0.3,
         google_api_key=os.getenv("GOOGLE_API_KEY"),
     )
